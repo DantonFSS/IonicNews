@@ -22,7 +22,6 @@ export class HistoryStateService {
 
   private state = new BehaviorSubject<HistoryState>(this.INITIAL_STATE);
 
-  // Expose state observables
   readonly conversions$ = this.state.pipe(
     map(state => this.sortConversions(state.conversions, state.sortOrder))
   );
@@ -45,7 +44,7 @@ export class HistoryStateService {
     })
   );
 
-  // State update methods
+  
   addConversion(conversion: ConversionHistory): void {
     const currentState = this.state.value;
     this.updateState({
@@ -83,7 +82,7 @@ export class HistoryStateService {
     this.updateState({ sortOrder });
   }
 
-  // Helper methods
+  
   private updateState(partialState: Partial<HistoryState>): void {
     this.state.next({
       ...this.state.value,
@@ -109,7 +108,6 @@ export class HistoryStateService {
     );
   }
 
-  // Analytics methods
   getMostUsedCurrencies(): Observable<{ code: string; count: number }[]> {
     return this.state.pipe(
       map(state => {
@@ -135,7 +133,7 @@ export class HistoryStateService {
     );
   }
 
-  // Get current state snapshot
+  
   getStateSnapshot(): HistoryState {
     return this.state.value;
   }

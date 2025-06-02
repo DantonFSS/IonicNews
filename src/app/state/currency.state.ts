@@ -39,7 +39,7 @@ export class CurrencyStateService {
     error: null
   });
 
-  // Expose individual state observables
+
   readonly selectedBaseCurrency$: Observable<Currency> = this.state.pipe(
     map(state => state.selectedBaseCurrency)
   );
@@ -68,7 +68,6 @@ export class CurrencyStateService {
     map(state => state.error)
   );
 
-  // Computed observables
   readonly currentRate$: Observable<number | null> = combineLatest([
     this.rates$,
     this.selectedTargetCurrency$
@@ -87,7 +86,7 @@ export class CurrencyStateService {
     )
   );
 
-  // State update methods
+
   setBaseCurrency(currency: Currency): void {
     this.updateState({ selectedBaseCurrency: currency });
   }
@@ -116,7 +115,6 @@ export class CurrencyStateService {
     this.updateState({ error, isLoading: false });
   }
 
-  // Swap base and target currencies
   swapCurrencies(): void {
     const currentState = this.state.value;
     this.updateState({
@@ -125,7 +123,6 @@ export class CurrencyStateService {
     });
   }
 
-  // Reset state to defaults
   resetState(): void {
     this.state.next({
       selectedBaseCurrency: this.DEFAULT_BASE_CURRENCY,
@@ -145,7 +142,6 @@ export class CurrencyStateService {
     });
   }
 
-  // Get current state snapshot
   getStateSnapshot(): CurrencyState {
     return this.state.value;
   }

@@ -1,19 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { BehaviorSubject, from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-export interface StorageConfig {
+interface StorageConfig {
   encrypt?: boolean;
-  maxAge?: number; // milliseconds
-  maxSize?: number; // bytes
+  maxAge?: number;
+  maxSize?: number;
 }
 
 interface StorageItem<T> {
   value: T;
   timestamp: number;
   size: number;
-  encrypted?: boolean;
+  encrypted: boolean;
 }
 
 @Injectable({
@@ -24,29 +23,19 @@ export class StorageService {
   private ready = new BehaviorSubject<boolean>(false);
   private readonly DEFAULT_CONFIG: StorageConfig = {
     encrypt: false,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    maxSize: 5 * 1024 * 1024 // 5MB
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxSize: 5 * 1024 * 1024
   };
 
   constructor(private storage: Storage) {
     this.init();
   }
 
-  async init() {
-    try {
-      const storage = await this.storage.create();
-      this._storage = storage;
-      this.ready.next(true);
-      await this.cleanupExpiredItems();
-    } catch (error) {
-      console.error('Storage initialization failed:', error);
-      this.ready.next(false);
-    }
+  private async init() {
+    this._storage = await this.storage.create();
+    this.ready.next(true);
   }
 
-  /**
-   * Store data with optional configuration
-   */
   async set(key: string, value: any, config?: StorageConfig): Promise<void> {
     if (!this._storage) {
       throw new Error('Storage is not initialized');
@@ -68,7 +57,7 @@ export class StorageService {
       value: processedValue,
       timestamp: Date.now(),
       size,
-      encrypted: mergedConfig.encrypt
+      encrypted: mergedConfig.encrypt || false
     };
 
     try {
@@ -79,9 +68,6 @@ export class StorageService {
     }
   }
 
-  /**
-   * Retrieve data with type safety
-   */
   async get<T>(key: string): Promise<T | null> {
     if (!this._storage) {
       throw new Error('Storage is not initialized');
@@ -94,7 +80,6 @@ export class StorageService {
         return null;
       }
 
-      // Check if item has expired
       if (Date.now() - item.timestamp > this.DEFAULT_CONFIG.maxAge!) {
         await this.remove(key);
         return null;
@@ -112,102 +97,39 @@ export class StorageService {
     }
   }
 
-  /**
-   * Remove data by key
-   */
   async remove(key: string): Promise<void> {
     if (!this._storage) {
       throw new Error('Storage is not initialized');
     }
 
-    try {
-      await this._storage.remove(key);
-    } catch (error) {
-      console.error(`Failed to remove data for key ${key}:`, error);
-      throw new Error('Storage operation failed');
-    }
+    await this._storage.remove(key);
   }
 
-  /**
-   * Clear all stored data
-   */
   async clear(): Promise<void> {
     if (!this._storage) {
       throw new Error('Storage is not initialized');
     }
 
-    try {
-      await this._storage.clear();
-    } catch (error) {
-      console.error('Failed to clear storage:', error);
-      throw new Error('Storage operation failed');
-    }
+    await this._storage.clear();
   }
 
-  /**
-   * Get all keys in storage
-   */
   async keys(): Promise<string[]> {
     if (!this._storage) {
       throw new Error('Storage is not initialized');
     }
 
-    try {
-      return this._storage.keys();
-    } catch (error) {
-      console.error('Failed to retrieve storage keys:', error);
-      return [];
-    }
+    return this._storage.keys();
   }
 
-  /**
-   * Check if storage is ready
-   */
   isReady(): Observable<boolean> {
     return this.ready.asObservable();
   }
 
-  /**
-   * Get total storage usage
-   */
-  async getStorageUsage(): Promise<{ used: number; total: number }> {
-    const keys = await this.keys();
-    let used = 0;
-
-    for (const key of keys) {
-      const item = await this._storage?.get(key);
-      if (item?.size) {
-        used += item.size;
-      }
-    }
-
-    return {
-      used,
-      total: this.DEFAULT_CONFIG.maxSize!
-    };
-  }
-
-  private async cleanupExpiredItems(): Promise<void> {
-    const keys = await this.keys();
-    const now = Date.now();
-
-    for (const key of keys) {
-      const item = await this._storage?.get(key);
-      if (item && (now - item.timestamp > this.DEFAULT_CONFIG.maxAge!)) {
-        await this.remove(key);
-      }
-    }
-  }
-
-  // Simple encryption/decryption methods
-  // Note: In a production app, use a proper encryption library
   private encrypt(data: any): any {
-    // This is a placeholder. In a real app, use proper encryption
     return btoa(JSON.stringify(data));
   }
 
   private decrypt(data: any): any {
-    // This is a placeholder. In a real app, use proper decryption
     try {
       return JSON.parse(atob(data));
     } catch {

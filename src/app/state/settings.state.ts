@@ -4,14 +4,14 @@ import { map } from 'rxjs/operators';
 import { StorageService } from '../core/storage/storage.service';
 
 export interface AppSettings {
-  syncInterval: number;  // in milliseconds
+  syncInterval: number; 
   enableNotifications: boolean;
   darkMode: boolean;
   defaultBaseCurrency: string;
   defaultTargetCurrency: string;
   autoRefresh: boolean;
   maxHistoryItems: number;
-  rateAlertThreshold: number;  // percentage change to trigger notification
+  rateAlertThreshold: number; 
   offlineMode: boolean;
 }
 
@@ -24,14 +24,14 @@ export class SettingsStateService {
   private readonly STORAGE_KEY = 'app_settings';
   
   private readonly DEFAULT_SETTINGS: AppSettings = {
-    syncInterval: 5 * 60 * 1000, // 5 minutes
+    syncInterval: 5 * 60 * 1000,
     enableNotifications: true,
     darkMode: false,
     defaultBaseCurrency: 'USD',
     defaultTargetCurrency: 'EUR',
     autoRefresh: true,
     maxHistoryItems: 50,
-    rateAlertThreshold: 5, // 5% change
+    rateAlertThreshold: 5,
     offlineMode: false
   };
 
@@ -41,7 +41,6 @@ export class SettingsStateService {
     this.loadSettings();
   }
 
-  // Expose settings as observables
   readonly settings$ = this.settings.asObservable();
   
   readonly syncInterval$ = this.settings.pipe(
@@ -71,7 +70,6 @@ export class SettingsStateService {
     map(settings => settings.offlineMode)
   );
 
-  // Settings update methods
   async updateSettings(partialSettings: Partial<AppSettings>): Promise<void> {
     const newSettings = {
       ...this.settings.value,
@@ -117,13 +115,11 @@ export class SettingsStateService {
     await this.updateSettings({ maxHistoryItems: max });
   }
 
-  // Reset settings to defaults
   async resetSettings(): Promise<void> {
     await this.saveSettings(this.DEFAULT_SETTINGS);
     this.settings.next(this.DEFAULT_SETTINGS);
   }
 
-  // Get current settings snapshot
   getSettingsSnapshot(): AppSettings {
     return this.settings.value;
   }
@@ -132,7 +128,6 @@ export class SettingsStateService {
     try {
       const stored = await this.storage.get<AppSettings>(this.STORAGE_KEY);
       if (stored) {
-        // Merge stored settings with defaults to handle new settings properties
         const mergedSettings = {
           ...this.DEFAULT_SETTINGS,
           ...stored
@@ -141,7 +136,6 @@ export class SettingsStateService {
       }
     } catch (error) {
       console.error('Failed to load settings:', error);
-      // Fallback to defaults if loading fails
       this.settings.next(this.DEFAULT_SETTINGS);
     }
   }
@@ -155,16 +149,12 @@ export class SettingsStateService {
     }
   }
 
-  // Clear all application data
   async clearAllData(): Promise<void> {
     try {
-      // Clear all data from storage
       await this.storage.clear();
       
-      // Reset settings to defaults
       await this.resetSettings();
       
-      // Emit success event or handle additional cleanup if needed
       console.log('All data cleared successfully');
     } catch (error) {
       console.error('Failed to clear data:', error);

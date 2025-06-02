@@ -19,7 +19,6 @@ export class AppComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    // Initialize dark mode from settings
     const settings = await this.settingsState.getSettingsSnapshot();
     if (settings.darkMode) {
       document.body.classList.add('dark');
