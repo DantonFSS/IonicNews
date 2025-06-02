@@ -1,0 +1,76 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Exchange Rate Trends</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Currency Selection -->
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">
+        <ion-item>
+          <ion-label position="stacked">Base Currency</ion-label>
+          <ion-select
+            [value]="selectedBaseCurrency"
+            (ionChange)="onBaseCurrencyChange($event)"
+            interface="action-sheet"
+          >
+            <ion-select-option *ngFor="let currency of currencies" [value]="currency.code">
+              {{ currency.code }} - {{ currency.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+      <ion-col size="6">
+        <ion-item>
+          <ion-label position="stacked">Target Currency</ion-label>
+          <ion-select
+            [value]="selectedTargetCurrency"
+            (ionChange)="onTargetCurrencyChange($event)"
+            interface="action-sheet"
+          >
+            <ion-select-option *ngFor="let currency of currencies" [value]="currency.code">
+              {{ currency.code }} - {{ currency.name }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Time Range Selector -->
+  <ion-segment [value]="timeRange" (ionChange)="onTimeRangeChange($event)">
+    <ion-segment-button value="1W">
+      <ion-label>1W</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="1M">
+      <ion-label>1M</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="3M">
+      <ion-label>3M</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="6M">
+      <ion-label>6M</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="1Y">
+      <ion-label>1Y</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Chart Container -->
+  <div class="chart-container">
+    <!-- Loading Skeleton -->
+    <div class="loading-skeleton" *ngIf="isLoading">
+      <ion-skeleton-text animated style="width: 100%; height: 300px;"></ion-skeleton-text>
+    </div>
+
+    <!-- Error Message -->
+    <ion-text color="danger" *ngIf="errorMessage">
+      <p class="error-message">{{ errorMessage }}</p>
+    </ion-text>
+
+    <!-- Chart Canvas -->
+    <canvas #chartCanvas *ngIf="!isLoading && !errorMessage"></canvas>
+  </div>
+</ion-content> 

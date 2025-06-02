@@ -1,0 +1,152 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <!-- Auto Refresh Settings -->
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>Auto Refresh</ion-label>
+      </ion-item-divider>
+
+      <ion-item>
+        <ion-label>Enable Auto Refresh</ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="settings.autoRefresh"
+          (ionChange)="onAutoRefreshChange($event)"
+        ></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Sync Interval</ion-label>
+        <ion-select
+          [value]="settings.syncInterval"
+          (ionChange)="onSyncIntervalChange($event)"
+          [disabled]="!settings.autoRefresh"
+        >
+          <ion-select-option *ngFor="let interval of syncIntervals" [value]="interval.value">
+            {{ interval.label }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-item-group>
+
+    <!-- Default Currencies -->
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>Default Currencies</ion-label>
+      </ion-item-divider>
+
+      <ion-item>
+        <ion-label>Base Currency</ion-label>
+        <ion-select
+          [value]="settings.defaultBaseCurrency"
+          (ionChange)="onBaseCurrencyChange($event)"
+        >
+          <ion-select-option *ngFor="let currency of currencies" [value]="currency.code">
+            {{ currency.code }} - {{ currency.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Target Currency</ion-label>
+        <ion-select
+          [value]="settings.defaultTargetCurrency"
+          (ionChange)="onTargetCurrencyChange($event)"
+        >
+          <ion-select-option *ngFor="let currency of currencies" [value]="currency.code">
+            {{ currency.code }} - {{ currency.name }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-item-group>
+
+    <!-- Notifications -->
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>Notifications</ion-label>
+      </ion-item-divider>
+
+      <ion-item>
+        <ion-label>Enable Notifications</ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="settings.enableNotifications"
+          (ionChange)="onNotificationsChange($event)"
+        ></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Rate Alert Threshold (%)</ion-label>
+        <ion-input
+          type="number"
+          [value]="settings.rateAlertThreshold"
+          (ionChange)="onRateAlertThresholdChange($event)"
+          [disabled]="!settings.enableNotifications"
+          min="1"
+          max="100"
+        ></ion-input>
+      </ion-item>
+    </ion-item-group>
+
+    <!-- History Settings -->
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>History</ion-label>
+      </ion-item-divider>
+
+      <ion-item>
+        <ion-label position="stacked">Max History Items</ion-label>
+        <ion-input
+          type="number"
+          [value]="settings.maxHistoryItems"
+          (ionChange)="onMaxHistoryItemsChange($event)"
+          min="10"
+          max="1000"
+        ></ion-input>
+      </ion-item>
+    </ion-item-group>
+
+    <!-- App Settings -->
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>App Settings</ion-label>
+      </ion-item-divider>
+
+      <ion-item>
+        <ion-label>Dark Mode</ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="settings.darkMode"
+          (ionChange)="onDarkModeChange($event)"
+        ></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Offline Mode</ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="settings.offlineMode"
+          (ionChange)="onOfflineModeChange($event)"
+        ></ion-toggle>
+      </ion-item>
+    </ion-item-group>
+
+    <!-- Data Management -->
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>Data Management</ion-label>
+      </ion-item-divider>
+
+      <ion-item button (click)="clearAllData()" color="danger" lines="none">
+        <ion-icon slot="start" name="trash-outline"></ion-icon>
+        <ion-label>Clear All Data</ion-label>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+</ion-content> 

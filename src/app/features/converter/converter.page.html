@@ -1,0 +1,121 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Currency Converter</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshRates()" [disabled]="isLoading">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="converterForm" (ngSubmit)="onConvert()">
+    <!-- Amount Input -->
+    <ion-item class="amount-input-item">
+      <ion-label position="floating">Amount</ion-label>
+      <ion-input
+        type="number"
+        inputmode="decimal"
+        formControlName="amount"
+        (ionInput)="onAmountInput($event)"
+        placeholder="0.00"
+        class="amount-input"
+      ></ion-input>
+      <ion-note slot="error" *ngIf="converterForm.get('amount')?.errors?.['min']">
+        Amount must be greater than 0
+      </ion-note>
+    </ion-item>
+
+    <!-- Currency Selection -->
+    <div class="currency-selection">
+      <!-- From Currency -->
+      <ion-item>
+        <ion-label>From Currency</ion-label>
+        <ion-button 
+          fill="outline" 
+          slot="end"
+          (click)="openFromCurrencySelect()"
+          class="currency-select-button"
+        >
+          {{ converterForm.get('fromCurrency')?.value }}
+          <ion-icon name="chevron-down-outline" slot="end"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <!-- Swap Button -->
+      <ion-button 
+        expand="full"
+        fill="clear" 
+        (click)="onSwapCurrencies()"
+        class="swap-button"
+      >
+        <ion-icon name="swap-vertical-outline" slot="start"></ion-icon>
+        Swap Currencies
+      </ion-button>
+
+      <!-- To Currency -->
+      <ion-item>
+        <ion-label>To Currency</ion-label>
+        <ion-button 
+          fill="outline" 
+          slot="end"
+          (click)="openToCurrencySelect()"
+          class="currency-select-button"
+        >
+          {{ converterForm.get('toCurrency')?.value }}
+          <ion-icon name="chevron-down-outline" slot="end"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </div>
+
+    <!-- Convert Button -->
+    <ion-button 
+      expand="block" 
+      type="submit"
+      [disabled]="!converterForm.valid || isLoading"
+      class="convert-button"
+      color="primary"
+      size="large"
+    >
+      <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+      <span *ngIf="!isLoading">Convert Now</span>
+    </ion-button>
+  </form>
+
+  <!-- Result Display -->
+  <ion-card *ngIf="conversionResult !== null" class="result-card">
+    <ion-card-header>
+      <ion-card-subtitle>Conversion Result</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="result-grid">
+        <div class="from-amount">
+          <ion-text color="medium">From:</ion-text>
+          <ion-text class="amount">
+            {{ converterForm.get('amount')?.value | number:'1.2-2' }}
+            {{ converterForm.get('fromCurrency')?.value }}
+          </ion-text>
+        </div>
+        
+        <div class="to-amount">
+          <ion-text color="medium">To:</ion-text>
+          <ion-text class="amount" color="primary">
+            {{ conversionResult | number:'1.2-2' }}
+            {{ converterForm.get('toCurrency')?.value }}
+          </ion-text>
+        </div>
+      </div>
+
+      <ion-text class="last-update" color="medium" *ngIf="lastUpdate">
+        <p>Last updated: {{ lastUpdate | date:'medium' }}</p>
+      </ion-text>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Error Message -->
+  <ion-item lines="none" *ngIf="errorMessage" color="danger">
+    <ion-icon name="alert-circle" slot="start"></ion-icon>
+    <ion-label class="ion-text-wrap">{{ errorMessage }}</ion-label>
+  </ion-item>
+</ion-content> 
