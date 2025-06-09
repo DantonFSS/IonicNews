@@ -24,3 +24,19 @@ Aplicativo desenvolvido com *Ionic + Angular* para exibição de notícias de fo
 git clone https://github.com/DantonFSS/IonicNews.git
 cd IonicNews
 ```
+
+### 2. Instale as dependências
+```bash
+npm install
+```
+
+### 3. Execute o app localmente
+```bash
+ionic serve
+```
+
+# Requisitos
+
+Node.js v18 ou superior
+
+Ionic CLI (npm install -g @ionic/cli)
